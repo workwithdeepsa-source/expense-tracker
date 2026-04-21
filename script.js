@@ -18,6 +18,9 @@ function addExpense() {
   expenses.push(expense);
   localStorage.setItem("expenses", JSON.stringify(expenses));
 
+  document.getElementById("amount").value = "";
+  document.getElementById("category").value = "";
+
   displayExpenses();
 }
 
@@ -28,17 +31,21 @@ function displayExpenses() {
   let total = 0;
   let categoryData = {};
 
-  expenses.forEach(exp => {
+  expenses.forEach((exp, index) => {
     total += exp.amount;
 
-    // category sum
     if (!categoryData[exp.category]) {
       categoryData[exp.category] = 0;
     }
     categoryData[exp.category] += exp.amount;
 
     let li = document.createElement("li");
-    li.innerText = `₹${exp.amount} - ${exp.category}`;
+
+    li.innerHTML = `
+      ₹${exp.amount} - ${exp.category}
+      <span class="delete-btn" onclick="deleteExpense(${index})">❌</span>
+    `;
+
     list.appendChild(li);
   });
 
@@ -47,12 +54,24 @@ function displayExpenses() {
   renderChart(categoryData);
 }
 
+function deleteExpense(index) {
+  expenses.splice(index, 1);
+  localStorage.setItem("expenses", JSON.stringify(expenses));
+  displayExpenses();
+}
+
+function resetData() {
+  if (confirm("Delete all expenses?")) {
+    localStorage.removeItem("expenses");
+    expenses = [];
+    displayExpenses();
+  }
+}
+
 function renderChart(data) {
   let ctx = document.getElementById("chart").getContext("2d");
 
-  if (chart) {
-    chart.destroy();
-  }
+  if (chart) chart.destroy();
 
   chart = new Chart(ctx, {
     type: "pie",
@@ -64,5 +83,7 @@ function renderChart(data) {
     }
   });
 }
+
+displayExpenses();
 
 displayExpenses();
