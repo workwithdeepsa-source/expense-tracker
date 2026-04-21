@@ -61,8 +61,8 @@ function deleteExpense(index) {
 }
 
 function resetData() {
-  if (confirm("Delete all expenses?")) {
-    localStorage.removeItem("expenses");
+  if (confirm("Are you sure you want to reset all data?")) {
+    localStorage.clear();
     expenses = [];
     displayExpenses();
   }
